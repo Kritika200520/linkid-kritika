@@ -96,7 +96,10 @@ export default function CreateLinkId() {
                                 />
                             </div>
 
-                            {available === true && (
+                            {checking && (
+                                <p className="text-sm text-muted-foreground">Checking...</p>
+                            )}
+                            {!checking && available === true && (
                                 <p className="text-sm text-green-500">
                                     Username available
                                 </p>
