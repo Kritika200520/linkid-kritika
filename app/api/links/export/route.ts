@@ -5,7 +5,8 @@ import prisma from "@/lib/prisma";
 
 function escapeCsv(value: unknown) {
     const text = value == null ? "" : String(value);
-    return `"${text.replace(/"/g, '""')}"`;
+    const neutralizedText = /^[=+\-@]/.test(text) ? `'${text}` : text;
+    return `"${neutralizedText.replace(/"/g, '""')}"`;
 }
 
 export async function GET() {
