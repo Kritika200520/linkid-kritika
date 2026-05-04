@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 import {
     detectPlatform,
@@ -88,20 +89,23 @@ export async function POST(req: Request) {
         );
     }
 
-    const maxOrder = await prisma.link.aggregate({
-        where: { userId: user.id },
-        _max: { order: true },
-    });
-
+    
     try {
-        const link = await prisma.link.create({
+        const link = await prisma.$transaction(async (tx) => {
+            const maxOrder = await tx.link.aggregate({
+                where: { userId: user.id },
+                _max: { order: true },
+            });
+
+            return tx.link.create({
             data: {
                 userId: user.id,
                 platform: finalPlatform,
                 label: finalLabel,
                 url: finalUrl,
                 order: (maxOrder._max.order ?? 0) + 1,
-            },
+                },
+            });
         });
 
         return NextResponse.json({ link });
