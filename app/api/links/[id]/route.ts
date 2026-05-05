@@ -3,10 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-import {
-    validatePlatformUrl,
-    normalizeUrl,
-} from "@/lib/platforms";
+import { validatePlatformUrl, normalizeUrl, detectPlatform } from "@/lib/platforms";
 
 export async function PUT(
     req: Request,
@@ -37,7 +34,12 @@ export async function PUT(
     if (typeof url === "string") {
         const finalUrl = normalizeUrl(url);
 
-        if (!validatePlatformUrl(link.platform as any, finalUrl)) {
+        // Derive platform from the final URL for validation so custom user-defined
+        // platform slugs (e.g. when platform was stored as a custom label) don't
+        // cause a runtime exception in `validatePlatformUrl`.
+        const platformForValidation = detectPlatform(finalUrl);
+
+        if (!validatePlatformUrl(platformForValidation, finalUrl)) {
             return NextResponse.json(
                 { error: "Please enter a valid public link" },
                 { status: 400 }

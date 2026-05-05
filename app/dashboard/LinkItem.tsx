@@ -16,6 +16,7 @@ import {
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { PLATFORM_ICONS } from "@/lib/platformIcons";
+import type { Link as ProfileLink } from "@/app/[username]/types/type";
 
 export function LinkItem({
     link,
@@ -24,7 +25,7 @@ export function LinkItem({
     onToggleVisibility,
     onDelete,
 }: {
-    link: { id: string; platform: string; url: string; clicks: number; isPublic: boolean; label?: string };
+    link: ProfileLink;
     username: string;
     onUpdate: (id: string, url: string) => Promise<void>;
     onToggleVisibility: (id: string, isPublic: boolean) => Promise<void>;
@@ -79,6 +80,8 @@ export function LinkItem({
                         size="icon"
                         variant="ghost"
                         onClick={() => onToggleVisibility(link.id, !link.isPublic)}
+                        aria-label={link.isPublic ? "Make link private" : "Make link public"}
+                        title={link.isPublic ? "Make link private" : "Make link public"}
                     >
                         {link.isPublic ? (
                             <EyeOff className="h-4 w-4" />
@@ -95,8 +98,8 @@ export function LinkItem({
                         )}
                     </Button>
 
-                    <a href={link.url} target="_blank">
-                        <Button size="icon" variant="ghost">
+                    <a href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${link.label ?? link.platform} in new tab`}> 
+                        <Button size="icon" variant="ghost" title={`Open ${link.label ?? link.platform}`}>
                             <ExternalLink className="h-4 w-4" />
                         </Button>
                     </a>

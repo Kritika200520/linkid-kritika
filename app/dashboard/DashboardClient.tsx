@@ -4,13 +4,8 @@ import { DashboardNavbar } from "@/app/components/DashboardNavbar";
 import { getCsrfToken } from "@/lib/csrfClient";
 import toast, { Toaster } from "react-hot-toast";
 import { LinksSection } from "./LinksSection";
+import type { Link as ProfileLink } from "@/app/[username]/types/type";
 import { LinkIdCard } from "./LinkIdCard";
-
-type DashboardLink = {
-    id: string;
-    url: string;
-    isPublic: boolean;
-} & Record<string, unknown>;
 
 export default function DashboardClient({
     username,
@@ -18,13 +13,13 @@ export default function DashboardClient({
     qrCode,
 }: {
     username: string;
-    initialLinks: DashboardLink[];
+    initialLinks: ProfileLink[];
     qrCode?: React.ReactNode;
 }) {
     const [links, setLinks] = useState(initialLinks);
     const [showAdd, setShowAdd] = useState(false);
 
-    async function addLink(link: DashboardLink) {
+    async function addLink(link: ProfileLink) {
         setLinks((prev) => [...prev, link]);
         setShowAdd(false);
     }
