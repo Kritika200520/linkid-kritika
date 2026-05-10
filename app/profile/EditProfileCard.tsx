@@ -142,6 +142,8 @@ export default function EditProfileCard({
                     onClick={saveChanges}
                     disabled={
                         loading ||
+                        checking ||
+                        username.length < 3 ||
                         (!available && username !== initialUsername)
                     }
                 >
