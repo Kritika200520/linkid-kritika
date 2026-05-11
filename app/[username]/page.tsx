@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { ProfileCard } from "./ProfileCard";
@@ -86,7 +86,19 @@ export default async function PublicProfile({
         notFound();
     }
 
-    if (!user) notFound();
+    if (!user) {
+        // Check username history for redirect
+        const history = await prisma.usernameHistory.findUnique({
+            where: { previousUsername: username },
+            include: { user: { select: { username: true } } },
+        });
+
+        if (history?.user?.username) {
+            redirect(`/${history.user.username}`);
+        }
+
+        notFound();
+    }
 
     return (
         <main className="min-h-screen bg-muted/40 px-4 py-16">

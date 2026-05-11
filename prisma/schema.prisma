@@ -13,16 +13,18 @@ model User {
   emailVerified DateTime?
   image         String?
 
-  password      String?  
+  password      String?
 
   username      String?  @unique
 
-  bio            String?  
+  bio            String?
 
   links         Link[]
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime @default(now())
+
+  usernameHistory UsernameHistory[]
 }
 
 
@@ -77,3 +79,11 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model UsernameHistory {
+  id               String   @id @default(cuid())
+  previousUsername String   @unique
+  userId           String
+  createdAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

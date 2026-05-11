@@ -110,6 +110,12 @@ export default function EditProfileCard({
                         />
                     </div>
 
+                    {username !== initialUsername && (
+                        <div className="rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800">
+                            ⚠️ <strong>Heads up:</strong> Changing your username may affect existing shared links. Old links will automatically redirect to your new username.
+                        </div>
+                    )}
+
                     <div className="space-y-1">
                         <Label>Bio</Label>
                         <textarea
