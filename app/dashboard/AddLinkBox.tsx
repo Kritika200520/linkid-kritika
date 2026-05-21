@@ -15,21 +15,24 @@ import toast from "react-hot-toast";
 
 import { validateUrl } from "@/lib/urlValidation";
 import type { Link as ProfileLink } from "@/app/[username]/types/type";
+import { PLATFORM_ICONS } from "@/lib/platformIcons";
+
+const formatLabel = (key: string) => {
+    const exceptions: Record<string, string> = {
+        github: "GitHub",
+        linkedin: "LinkedIn",
+        x: "X (Twitter)",
+        youtube: "YouTube",
+        leetcode: "LeetCode",
+        devto: "Dev.to",
+    };
+    return exceptions[key] || key.charAt(0).toUpperCase() + key.slice(1);
+};
 
 const POPULAR_PLATFORMS = [
-    { value: "github", label: "GitHub" },
-    { value: "linkedin", label: "LinkedIn" },
-    { value: "x", label: "X (Twitter)" },
-    { value: "youtube", label: "YouTube" },
-    { value: "instagram", label: "Instagram" },
-    { value: "facebook", label: "Facebook" },
-    { value: "discord", label: "Discord" },
-    { value: "leetcode", label: "LeetCode" },
-    { value: "medium", label: "Medium" },
-    { value: "devto", label: "Dev.to" },
-    { value: "hashnode", label: "Hashnode" },
-    { value: "twitch", label: "Twitch" },
-    { value: "dribbble", label: "Dribbble" },
+    ...Object.keys(PLATFORM_ICONS)
+        .filter((key) => key !== "website" && key !== "portfolio")
+        .map((key) => ({ value: key, label: formatLabel(key) })),
     { value: "website", label: "Personal Website / Other" },
 ];
 
@@ -71,34 +74,39 @@ export default function AddLinkBox({
         }
 
         setLoading(true);
-        const csrfToken = await getCsrfToken();
+        try {
+            const csrfToken = await getCsrfToken();
 
-        const res = await fetch("/api/links", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-csrf-token": csrfToken,
-            },
-            body: JSON.stringify({
-                url,
-                label: finalLabel,
-                platform,
-            }),
-        });
+            const res = await fetch("/api/links", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-csrf-token": csrfToken,
+                },
+                body: JSON.stringify({
+                    url,
+                    label: finalLabel,
+                    platform,
+                }),
+            });
 
-        const data = await res.json();
-        setLoading(false);
+            const data = await res.json();
 
-        if (!res.ok) {
-            return toast.error(data.error ?? "Failed to add link");
+            if (!res.ok) {
+                return toast.error(data.error ?? "Failed to add link");
+            }
+
+            toast.success("Link added");
+            onAdded(data.link);
+
+            setUrl("");
+            setLabel("");
+            setPlatform("");
+        } catch (err: any) {
+            toast.error(err?.message ?? "Failed to add link");
+        } finally {
+            setLoading(false);
         }
-
-        toast.success("Link added");
-        onAdded(data.link);
-
-        setUrl("");
-        setLabel("");
-        setPlatform("");
     }
 
     return (
