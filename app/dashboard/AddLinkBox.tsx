@@ -102,8 +102,9 @@ export default function AddLinkBox({
             setUrl("");
             setLabel("");
             setPlatform("");
-        } catch (err: any) {
-            toast.error(err?.message ?? "Failed to add link");
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : "Failed to add link";
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
