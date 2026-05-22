@@ -1,8 +1,9 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { DashboardNavbar } from "@/app/components/DashboardNavbar";
+import { getProfileVersions } from "@/lib/profileWorkflow";
 
 import { ProfileHeaderCard } from "./ProfileHeaderCard";
 import { AccountInfoCard } from "./AccountInfoCard";
@@ -15,10 +16,17 @@ export default async function ProfilePage() {
 
     const user = await prisma.user.findUnique({
         where: { email: session.user.email },
-        include: { accounts: true, links: true },
+        include: { 
+            accounts: true, 
+            links: true,
+            profileDraft: true,
+        },
     });
 
     if (!user) return null;
+
+    // Load profile versions
+    const profileVersions = await getProfileVersions(user.id);
 
     return (
         <>
@@ -32,11 +40,15 @@ export default async function ProfilePage() {
 
                 <AccountInfoCard user={user} />
 
-                <ProfileActionsCard hasPassword={!!user.password} />
+                <ProfileActionsCard
+                    hasPassword={Boolean(user.password)}
+                    profileDraft={user.profileDraft}
+                    profileVersions={profileVersions}
+                />
 
                 <DangerZoneCard
                     userEmail={user.email}
-                    hasPassword={!!user.password}
+                    hasPassword={Boolean(user.password)}
                 />
             </main>
         </>

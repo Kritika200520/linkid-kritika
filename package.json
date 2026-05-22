@@ -8,6 +8,7 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "postinstall": "node scripts/postinstall-prisma-generate.mjs",
+    "migrate:deploy:safe": "node scripts/safe-prisma-migrate-deploy.mjs",
     "lint": "eslint",
     "test": "tsx --test lib/csrf.test.ts lib/middleware/csrf.test.ts lib/analytics.test.ts lib/accountMergeUtils.test.ts"
   },
@@ -22,6 +23,7 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "@react-pdf/renderer": "^4.5.1",
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
     "class-variance-authority": "^0.7.1",
