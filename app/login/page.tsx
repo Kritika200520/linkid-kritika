@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
 import { Navbar } from "../components/Navbar";
 import { FcGoogle } from "react-icons/fc";
@@ -76,17 +77,14 @@ export default function LoginPage() {
               disabled={googleLoading}
               onClick={async () => {
                 setGoogleLoading(true);
-                await signIn("google", { callbackUrl: "/dashboard" });
+                try {
+                  await signIn("google", { callbackUrl: "/dashboard" });
+                } finally {
+                  setGoogleLoading(false);
+                }
               }}
             >
-              {googleLoading ? (
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-              ) : (
-                <FcGoogle className="h-5 w-5" />
-              )}
+              {googleLoading ? <Spinner className="h-5 w-5" /> : <FcGoogle className="h-5 w-5" />}
               {googleLoading ? "Connecting..." : "Continue with Google"}
             </Button>
 
@@ -96,17 +94,14 @@ export default function LoginPage() {
               disabled={githubLoading}
               onClick={async () => {
                 setGithubLoading(true);
-                await signIn("github", { callbackUrl: "/dashboard" });
+                try {
+                  await signIn("github", { callbackUrl: "/dashboard" });
+                } finally {
+                  setGithubLoading(false);
+                }
               }}
             >
-              {githubLoading ? (
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-              ) : (
-                <FaGithub className="h-5 w-5" />
-              )}
+              {githubLoading ? <Spinner className="h-5 w-5" /> : <FaGithub className="h-5 w-5" />}
               {githubLoading ? "Connecting..." : "Continue with GitHub"}
             </Button>
           </div>
