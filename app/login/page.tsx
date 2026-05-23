@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
 import { Navbar } from "../components/Navbar";
 import { FcGoogle } from "react-icons/fc";
@@ -16,6 +17,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [githubLoading, setGithubLoading] = useState(false);
 
   async function handleLogin() {
     const trimmedEmail = email.trim();
@@ -73,19 +77,35 @@ export default function LoginPage() {
             <Button
               variant="outline"
               className="w-full flex items-center justify-center gap-2"
-              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+              disabled={googleLoading || githubLoading}
+              onClick={async () => {
+                setGoogleLoading(true);
+                try {
+                  await signIn("google", { callbackUrl: "/dashboard" });
+                } finally {
+                  setGoogleLoading(false);
+                }
+              }}
             >
-              <FcGoogle className="h-5 w-5" />
-              Continue with Google
+              {googleLoading ? <Spinner className="h-5 w-5" /> : <FcGoogle className="h-5 w-5" />}
+              {googleLoading ? "Connecting..." : "Continue with Google"}
             </Button>
 
             <Button
               variant="outline"
               className="w-full flex items-center justify-center gap-2"
-              onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+              disabled={googleLoading || githubLoading}
+              onClick={async () => {
+                setGithubLoading(true);
+                try {
+                  await signIn("github", { callbackUrl: "/dashboard" });
+                } finally {
+                  setGithubLoading(false);
+                }
+              }}
             >
-              <FaGithub className="h-5 w-5" />
-              Continue with GitHub
+              {githubLoading ? <Spinner className="h-5 w-5" /> : <FaGithub className="h-5 w-5" />}
+              {githubLoading ? "Connecting..." : "Continue with GitHub"}
             </Button>
           </div>
 

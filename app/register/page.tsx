@@ -10,6 +10,7 @@ import { FcGoogle } from "react-icons/fc";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { getCsrfToken } from "@/lib/csrfClient";
 import { useCsrf } from "@/lib/useCsrf";
 
@@ -22,6 +23,9 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [submitError, setSubmitError] = useState<string | null>(null);
     const csrfToken = useCsrf();
+
+    const [googleLoading, setGoogleLoading] = useState(false);
+    const [githubLoading, setGithubLoading] = useState(false);
 
     const getPasswordError = (value: string) => {
         if (value.length < 8) return "Must be at least 8 characters";
@@ -91,19 +95,37 @@ export default function RegisterPage() {
                         <Button
                             variant="outline"
                             className="flex w-full items-center justify-center gap-2"
-                            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+                            disabled={googleLoading || githubLoading}
+                            onClick={async () => {
+                                setGoogleLoading(true);
+                                try {
+                                    await signIn("google", { callbackUrl: "/dashboard" });
+                                } finally {
+                                    setGoogleLoading(false);
+                                }
+                            }}
                         >
-                            <FcGoogle className="h-5 w-5" />
-                            Continue with Google
+                            {googleLoading ? <Spinner className="h-5 w-5" /> : <FcGoogle className="h-5 w-5" />}
+                            {googleLoading ? "Connecting..." : "Continue with Google"}
                         </Button>
 
                         <Button
                             variant="outline"
                             className="flex w-full items-center justify-center gap-2"
-                            onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+                            disabled={googleLoading || githubLoading}
+                            onClick={async () => {
+                                setGithubLoading(true);
+                                try {
+                                    await signIn("github", { callbackUrl: "/dashboard" });
+                                } finally {
+                                    setGithubLoading(false);
+                                }
+                            }}
                         >
-                            <FaGithub className="h-5 w-5" />
-                            Continue with GitHub
+
+                            {githubLoading ? <Spinner className="h-5 w-5" /> : <FaGithub className="h-5 w-5" />}
+                            {githubLoading ? "Connecting..." : "Continue with GitHub"}
+
                         </Button>
                     </div>
 
